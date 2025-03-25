@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARtwall - Your Space, Your Story</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Page 1: Homepage -->
+        <div v-if="currentPage === 1" class="min-h-screen bg-gradient-to-b from-[#F5F7FA] to-[#E8EAF1] flex flex-col items-center justify-center relative overflow-hidden">
+            <!-- Decorative geometric shapes with animation -->
+            <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div class="geometric-shape"></div>
+                <div class="geometric-shape"></div>
+                <div class="geometric-shape"></div>
+                <div class="geometric-shape"></div>
+                <div class="geometric-shape"></div>
+            </div>
+            
+            <!-- Logo -->
+            <div class="mb-6 animate-bounce">
+                <div class="w-[150px] h-[150px] bg-white rounded-full flex items-center justify-center shadow-lg mb-4 mx-auto">
+                    <span class="text-4xl font-['Playfair_Display'] text-[#4A90E2]">ARtwall</span>
+                </div>
+            </div>
+            
+            <!-- Headline and Tagline -->
+            <h1 class="text-4xl md:text-5xl text-[#2D3436] font-['Playfair_Display'] mb-6 text-center px-4 animate-pulse">Your Space, Your Story</h1>
+            <p class="text-xl md:text-2xl text-[#636E72] font-['Roboto'] mb-12 text-center px-4">Designed by You, Powered by Technology</p>
+            
+            <!-- Auth Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 animate-fade-in-up">
+                <button @click="fadeToPage(2)" class="px-8 py-3 bg-[#4A90E2] text-white rounded-lg hover:bg-[#357ABD] transition-all transform hover:scale-105 min-w-[180px]">
+                    Log In
+                </button>
+                <button @click="fadeToPage(2)" class="px-8 py-3 bg-[#00C853] text-white rounded-lg hover:bg-[#00A844] transition-all transform hover:scale-105 min-w-[180px]">
+                    Sign Up
+                </button>
+                <button @click="fadeToPage(2)" class="px-8 py-3 bg-[#F5F5F5] text-[#2D3436] rounded-lg hover:shadow-lg transition-all transform hover:scale-105 min-w-[180px]">
+                    Guest
+                </button>
+            </div>
+            
+            <!-- App download links below buttons -->
+            <div class="flex flex-col sm:flex-row gap-2 mt-8 text-[#636E72] text-sm">
+                <button @click="fadeToPage(2)" class="flex items-center gap-1 px-3 py-1 hover:text-[#4A90E2] transform hover:scale-105 transition-transform">
+                    <i class="bi bi-apple text-xl"></i> iOS App
+                </button>
+                <button @click="fadeToPage(2)" class="flex items-center gap-1 px-3 py-1 hover:text-[#00C853] transform hover:scale-105 transition-transform">
+                    <i class="bi bi-android2 text-xl"></i> Android App
+                </button>
+                <button @click="fadeToPage(2)" class="flex items-center gap-1 px-3 py-1 hover:text-[#6C5CE7] transform hover:scale-105 transition-transform">
+                    <i class="bi bi-browser-chrome text-xl"></i> Web Demo
+                </button>
+            </div>
+        </div>
+
+        <!-- Page 2: Service Selection -->
+        <div v-if="currentPage === 2" class="min-h-screen bg-gradient-to-b from-[#F8FAFD] to-[#E8EAF1] p-4 py-12 transition-opacity duration-500" :class="pageTransition">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl md:text-4xl text-[#2D3436] font-['Playfair_Display'] mb-12 text-center animate-pulse">What would you like to do today?</h2>
+                
+                <!-- Moving particles background -->
+                <div class="particles-container absolute inset-0 pointer-events-none overflow-hidden">
+                    <div v-for="n in 20" :key="`particle-${n}`" class="particle"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+                    <div v-for="(service, index) in services" :key="index" 
+                        class="p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white h-[400px] flex flex-col justify-between relative overflow-hidden">
+                        <!-- Gradient overlay with animation -->
+                        <div class="absolute inset-0 opacity-10 gradient-overlay" :class="`gradient-${index}`"></div>
+                        
+                        <div>
+                            <div class="text-6xl mb-6 flex justify-center animate-bounce">{{ service.icon }}</div>
+                            <h3 class="text-xl font-bold mb-6 text-center">{{ service.title }}</h3>
+                            <p class="text-[#636E72] text-center mb-6">{{ service.description }}</p>
+                        </div>
+                        <button @click="selectService(index)" 
+                                class="px-6 py-3 rounded-lg text-white w-full"
+                                :class="service.buttonClass">
+                            {{ service.buttonText }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3: Web AR Demo & Image Upload -->
+        <div v-if="currentPage === 3" class="min-h-screen bg-gray-50 p-4 transition-opacity duration-500" :class="pageTransition">
+            <div class="max-w-4xl mx-auto py-8">
+                <h2 class="text-3xl font-['Playfair_Display'] font-bold mb-8 text-center text-[#2D3436] animate-pulse">Upload your wall photo!</h2>
+                
+                <!-- Animated background with subtle design -->
+                <div class="absolute top-0 left-0 w-full h-full z-0 overflow-hidden">
+                    <div v-for="n in 10" :key="`shape-${n}`" class="floating-shape"></div>
+                </div>
+                
+                <!-- Image upload container -->
+                <div class="upload-container p-8 bg-white rounded-xl shadow-lg relative z-10">
+                    <div v-if="!uploadedImage && !isLoading" 
+                         @drop.prevent="handleDrop" 
+                         @dragover.prevent
+                         class="border-2 border-dashed border-[#E3F2FD] rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                         @click="$refs.fileInput.click()">
+                        <input type="file" @change="handleFileUpload" ref="fileInput" class="hidden" accept="image/*">
+                        <div class="mb-4 text-[#4A90E2]">
+                            <i class="bi bi-camera text-5xl animate-pulse"></i>
+                        </div>
+                        <p class="mb-4 text-[#636E72]">Drag image here or click to upload</p>
+                        <p class="text-gray-400 text-sm">(JPG/PNG, max 10MB)</p>
+                    </div>
+                    
+                    <!-- Loading state -->
+                    <div v-if="isLoading" class="py-12">
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#6C5CE7] mb-4"></div>
+                            <h3 class="text-lg font-medium mb-2">AI is designing your space...</h3>
+                            <div class="w-full max-w-md h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                <div class="h-full bg-[#6C5CE7] rounded-full" :style="`width: ${loadingProgress}%`"></div>
+                            </div>
+                            <p class="text-gray-500 text-sm">{{ Math.ceil(60 - (loadingProgress * 0.6)) }} seconds remaining</p>
+                        </div>
+                        
+                        <!-- Chrome Dinosaur game while waiting -->
+                        <div class="mt-8 border rounded-lg p-4">
+                            <h3 class="text-lg font-medium mb-3 text-center">Play while you wait! 🎮</h3>
+                            <div class="relative w-full h-[150px] bg-gray-100 rounded-lg mb-4 overflow-hidden" id="game-container">
+                                <div id="dino" class="absolute bottom-0 h-[40px] w-[40px] bg-gray-800"></div>
+                                <div v-for="(cactus, index) in cacti" :key="`cactus-${index}`"
+                                     class="absolute bottom-0 w-[20px] h-[40px] bg-green-800"
+                                     :style="`left: ${cactus.position}px`"></div>
+                                <div class="absolute bottom-0 w-full h-[1px] bg-gray-400"></div>
+                                <div class="absolute top-2 right-2 text-sm font-mono">Score: {{ gameScore }}</div>
+                            </div>
+                            <p class="text-center text-sm text-gray-500">Press Space or tap to jump</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Uploaded image and controls -->
+                    <div v-if="uploadedImage && !isLoading" class="mt-8">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <!-- Image preview -->
+                            <div class="flex-1 relative">
+                                <img :src="uploadedImage" alt="Uploaded wall" class="max-w-full rounded-lg shadow-md">
+                                
+                                <!-- Placed decoration items -->
+                                <div v-for="item in placedItems" :key="`placed-${item.id}`" 
+                                     :style="`position: absolute; top: ${item.top}px; left: ${item.left}px; font-size: 2rem; cursor: move; user-select: none;`"
+                                     @mousedown="dragItem($event, item)">{{ item.emoji }}</div>
+                            </div>
+                            
+                            <!-- Right sidebar -->
+                            <div class="w-full md:w-64">
+                                <!-- Style preferences -->
+                                <div class="mb-6">
+                                    <h3 class="font-medium mb-4 text-center">Style Preferences</h3>
+                                    
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium mb-2">Design Style</label>
+                                        <select v-model="designPreferences.style" class="w-full p-2 border rounded-md">
+                                            <option value="modern">Modern</option>
+                                            <option value="bohemian">Bohemian</option>
+                                            <option value="minimalist">Minimalist</option>
+                                            <option value="industrial">Industrial</option>
+                                            <option value="scandinavian">Scandinavian</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium mb-2">Color Scheme</label>
+                                        <select v-model="designPreferences.colors" class="w-full p-2 border rounded-md">
+                                            <option value="neutral">Neutral Tones</option>
+                                            <option value="warm">Warm Colors</option>
+                                            <option value="cool">Cool Colors</option>
+                                            <option value="bold">Bold & Vibrant</option>
+                                            <option value="pastel">Soft Pastels</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium mb-2">Room Type</label>
+                                        <select v-model="designPreferences.roomType" class="w-full p-2 border rounded-md">
+                                            <option value="living">Living Room</option>
+                                            <option value="bedroom">Bedroom</option>
+                                            <option value="office">Home Office</option>
+                                            <option value="dining">Dining Area</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="font-medium mb-2">Do you have decor resources?</h3>
+                                    <div class="flex gap-2">
+                                        <button @click="hasResources = true" 
+                                                class="flex-1 py-2 rounded-md" 
+                                                :class="hasResources ? 'bg-[#6C5CE7] text-white' : 'bg-gray-100'">Yes</button>
+                                        <button @click="hasResources = false" 
+                                                class="flex-1 py-2 rounded-md"
+                                                :class="!hasResources ? 'bg-[#6C5CE7] text-white' : 'bg-gray-100'">No</button>
+                                    </div>
+                                </div>
+                                
+                                <div v-if="hasResources" class="mb-6">
+                                    <label class="block font-medium mb-2">Upload resources</label>
+                                    <div class="border border-gray-200 rounded-md p-2 text-center cursor-pointer hover:bg-gray-50"
+                                         @click="$refs.resourcesInput.click()">
+                                        <input type="file" @change="uploadResources" ref="resourcesInput" class="hidden" multiple>
+                                        <i class="bi bi-upload text-lg"></i> Add files
+                                    </div>
+                                    <div v-if="resources.length > 0" class="mt-2 text-sm text-gray-500">
+                                        {{ resources.length }} file(s) uploaded
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="font-medium mb-2">Drag items to wall</h3>
+                                    <div class="decor-items grid grid-cols-3 gap-2">
+                                        <div v-for="item in decorItems" 
+                                             :key="item.id" 
+                                             class="cursor-pointer text-center text-2xl h-12 flex items-center justify-center rounded-md bg-gray-50 hover:bg-gray-100"
+                                             @click="addItemToWall(item)">
+                                            {{ item.emoji }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex flex-col gap-2">
+                                    <button @click="startAIProcessing" class="w-full py-2 bg-[#6C5CE7] text-white rounded-md hover:bg-[#5849C8] transform hover:scale-105 transition-transform">
+                                        Generate AI Designs
+                                    </button>
+                                    <button @click="resetWall" class="w-full py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI generated designs -->
+                    <div v-if="showAIResults" class="mt-8">
+                        <h3 class="text-2xl font-['Playfair_Display'] font-bold mb-4 text-center animate-pulse">Your AI-designed wall is ready! 🎨</h3>
+                        
+                        <div class="relative">
+                            <!-- Carousel controls -->
+                            <button @click="prevDesign" class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                                <i class="bi bi-chevron-left text-xl"></i>
+                            </button>
+                            
+                            <button @click="nextDesign" class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                                <i class="bi bi-chevron-right text-xl"></i>
+                            </button>
+                            
+                            <!-- Carousel content -->
+                            <div class="overflow-hidden">
+                                <div class="flex transition-transform duration-300" :style="`transform: translateX(-${currentDesignIndex * 100}%)`">
+                                    <div v-for="(design, index) in aiDesigns" :key="index" class="w-full flex-shrink-0 px-10">
+                                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                                            <!-- Design image -->
+                                            <img :src="design.image" :alt="design.name" class="w-full h-[400px] object-cover">
+                                            
+                                            <!-- Design info -->
+                                            <div class="p-4">
+                                                <h4 class="text-xl font-bold mb-2">{{ design.name }}</h4>
+                                                <p class="text-gray-600 mb-4">{{ design.description }}</p>
+                                                
+                                                <div class="flex gap-3">
+                                                    <button @click="applyDesign(design)" class="flex-1 py-2 bg-[#4A90E2] text-white rounded-md hover:bg-[#357ABD] transform hover:scale-105 transition-transform">
+                                                        Apply Design
+                                                    </button>
+                                                    <button @click="shopItems(design)" class="flex-1 py-2 border border-[#2D3436] text-[#2D3436] rounded-md hover:bg-gray-50">
+                                                        Shop Items
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Indicator dots -->
+                        <div class="flex justify-center gap-2 mt-4">
+                            <button v-for="(design, index) in aiDesigns" :key="`dot-${index}`" 
+                                    @click="currentDesignIndex = index"
+                                    class="w-3 h-3 rounded-full transition-colors"
+                                    :class="index === currentDesignIndex ? 'bg-[#6C5CE7]' : 'bg-gray-300'"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 4: Final Design Hub -->
+        <div v-if="currentPage === 4" class="min-h-screen bg-gray-50 p-4 transition-opacity duration-500" :class="pageTransition">
+            <div class="max-w-6xl mx-auto py-8">
+                <h2 class="text-3xl md:text-4xl font-['Playfair_Display'] font-bold mb-8 text-center text-[#2D3436] animate-pulse">Your Dream Wall is Ready!</h2>
+                
+                <!-- Moving particles background -->
+                <div class="particles-container absolute inset-0 pointer-events-none overflow-hidden">
+                    <div v-for="n in 20" :key="`particle-final-${n}`" class="particle"></div>
+                </div>
+                
+                <!-- Design display -->
+                <div class="relative mb-8">
+                    <!-- Carousel controls -->
+                    <button @click="prevDesign" class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                        <i class="bi bi-chevron-left text-xl"></i>
+                    </button>
+                    
+                    <button @click="nextDesign" class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                        <i class="bi bi-chevron-right text-xl"></i>
+                    </button>
+                    
+                    <!-- Carousel content -->
+                    <div class="overflow-hidden rounded-xl shadow-lg">
+                        <div class="flex transition-transform duration-300" :style="`transform: translateX(-${currentDesignIndex * 100}%)`">
+                            <div v-for="(design, index) in aiDesigns" :key="`final-${index}`" class="w-full flex-shrink-0">
+                                <img :src="design.image" :alt="design.name" class="w-full h-[500px] object-cover">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Indicator dots -->
+                    <div class="flex justify-center gap-2 mt-4">
+                        <button v-for="(design, index) in aiDesigns" :key="`final-dot-${index}`" 
+                                @click="currentDesignIndex = index"
+                                class="w-3 h-3 rounded-full transition-colors"
+                                :class="index === currentDesignIndex ? 'bg-[#6C5CE7]' : 'bg-gray-300'"></button>
+                    </div>
+                </div>
+                
+                <!-- Action buttons -->
+                <div class="flex flex-wrap justify-center gap-4 mb-12">
+                    <button class="px-6 py-3 bg-[#00C853] text-white rounded-lg flex items-center gap-2 hover:bg-[#00A844] transform hover:scale-105 transition-transform">
+                        <i class="bi bi-download"></i> Save Design
+                    </button>
+                    <button @click="shareDesign" class="px-6 py-3 bg-[#4A90E2] text-white rounded-lg flex items-center gap-2 hover:bg-[#357ABD] transform hover:scale-105 transition-transform">
+                        <i class="bi bi-share"></i> Share
+                    </button>
+                    <button @click="resetAndGoBack" class="px-6 py-3 bg-[#D63031] text-white rounded-lg flex items-center gap-2 hover:bg-[#C0392B] transform hover:scale-105 transition-transform">
+                        <i class="bi bi-arrow-repeat"></i> Restart
+                    </button>
+                </div>
+                
+                <!-- E-Commerce section -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8 relative overflow-hidden">
+                    <!-- Animated background effect -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#f0f4ff] to-[#f9f9ff] opacity-50"></div>
+                    
+                    <h3 class="text-2xl font-['Playfair_Display'] font-bold mb-6 relative z-10">Shop this look:</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 relative z-10">
+                        <div v-for="(product, index) in getCurrentDesignProducts()" :key="`product-${index}`" 
+                             class="border rounded-lg overflow-hidden hover:shadow-md transition-shadow transform hover:scale-105 transition-transform">
+                            <div class="h-48 bg-gray-200"></div>
+                            <div class="p-4">
+                                <h4 class="font-medium mb-1">{{ product.name }}</h4>
+                                <p class="text-[#6C5CE7] font-bold mb-3">${{ product.price }}</p>
+                                <a :href="product.link" target="_blank" class="block w-full text-center py-2 border border-[#4A90E2] text-[#4A90E2] rounded hover:bg-[#4A90E2] hover:text-white transition-colors">
+                                    Buy Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Community gallery teaser -->
+                <div class="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden">
+                    <!-- Animated background effect -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#f0f4ff] to-[#f9f9ff] opacity-50"></div>
+                    
+                    <h3 class="text-xl font-bold mb-4 relative z-10">Explore the Community Gallery</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 relative z-10">
+                        <div v-for="n in 4" :key="`gallery-${n}`" class="h-32 bg-gray-200 rounded-lg transform hover:scale-105 transition-transform"></div>
+                    </div>
+                    <button @click="goToCommunityGallery" class="w-full py-3 bg-[#6C5CE7] text-white rounded-lg hover:bg-[#5849C8] transform hover:scale-105 transition-transform">
+                        Browse Designs
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Community Gallery Page -->
+        <div v-if="currentPage === 5" class="min-h-screen bg-gray-50 p-4 transition-opacity duration-500" :class="pageTransition">
+            <div class="max-w-6xl mx-auto py-8">
+                <h2 class="text-3xl font-bold text-center mb-8 font-['Playfair_Display'] animate-pulse">Community Gallery</h2>
+                
+                <!-- Moving particles background -->
+                <div class="particles-container absolute inset-0 pointer-events-none overflow-hidden">
+                    <div v-for="n in 20" :key="`particle-gallery-${n}`" class="particle"></div>
+                </div>
+                
+                <div class="filters mb-8">
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <select class="px-4 py-2 border rounded-lg bg-white">
+                            <option value="">Room Type</option>
+                            <option>Living Room</option>
+                            <option>Dorm</option>
+                            <option>Cafe</option>
+                            <option>Bedroom</option>
+                            <option>Office</option>
+                        </select>
+                        
+                        <select class="px-4 py-2 border rounded-lg bg-white">
+                            <option value="">Style</option>
+                            <option>Bohemian</option>
+                            <option>Minimalist</option>
+                            <option>Industrial</option>
+                            <option>Scandinavian</option>
+                            <option>Modern</option>
+                        </select>
+                        
+                        <input type="search" placeholder="Find designs..." class="px-4 py-2 border rounded-lg bg-white min-w-[200px]">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div v-for="n in 8" :key="`gallery-card-${n}`" class="design-card bg-white rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow transform hover:scale-105 transition-transform">
+                        <div class="bg-gray-200 w-full h-[200px] mb-2"></div>
+                        <div class="p-3">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-1">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span class="text-sm">User{{ n }}</span>
+                                </div>
+                                <span class="text-xs text-gray-500">{{ new Date().toLocaleDateString() }}</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-2">
+                                <button class="flex items-center gap-1 text-gray-600 hover:text-red-500">
+                                    <i class="bi bi-heart"></i>
+                                    <span>{{ Math.floor(Math.random() * 100) }}</span>
+                                </button>
+                                <button @click="shareGalleryItem" class="flex items-center gap-1 text-gray-600 hover:text-[#4A90E2]">
+                                    <i class="bi bi-share"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button @click="currentPage = 1" class="px-6 py-3 bg-[#4A90E2] text-white rounded-lg hover:bg-[#357ABD] transform hover:scale-105 transition-transform">
+                        Back to Home
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Share overlay -->
+        <div v-if="showShareOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl p-6 max-w-md w-full">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Share this design</h3>
+                    <button @click="showShareOverlay = false" class="text-gray-500 hover:text-gray-700">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                
+                <div class="flex justify-center gap-4 mb-6">
+                    <button class="w-12 h-12 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-xl transform hover:scale-110 transition-transform">
+                        <i class="bi bi-facebook"></i>
+                    </button>
+                    <button class="w-12 h-12 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center text-xl transform hover:scale-110 transition-transform">
+                        <i class="bi bi-twitter-x"></i>
+                    </button>
+                    <button class="w-12 h-12 rounded-full bg-[#E60023] text-white flex items-center justify-center text-xl transform hover:scale-110 transition-transform">
+                        <i class="bi bi-pinterest"></i>
+                    </button>
+                    <button class="w-12 h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center text-xl transform hover:scale-110 transition-transform">
+                        <i class="bi bi-whatsapp"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Direct link</label>
+                    <div class="flex">
+                        <input type="text" readonly value="https://artwall.app/design/12345" class="flex-1 px-3 py-2 border rounded-l-lg bg-gray-50">
+                        <button class="px-3 py-2 bg-[#6C5CE7] text-white rounded-r-lg">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button @click="showShareOverlay = false" class="w-full py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transform hover:scale-105 transition-transform">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Geometric shape decorations */
+        .geometric-shape {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(45deg);
+            transition: all 2s ease-in-out;
+            animation: float 15s infinite ease-in-out;
+            border-radius: 30%;
+        }
+        .geometric-shape:nth-child(1) { 
+            top: 10%; 
+            left: 10%; 
+            width: 150px;
+            height: 150px;
+            animation-delay: 0s;
+            background: rgba(74, 144, 226, 0.1);
+        }
+        .geometric-shape:nth-child(2) { 
+            top: 50%; 
+            right: 10%; 
+            width: 200px;
+            height: 200px;
+            animation-delay: 2s;
+            background: rgba(0, 200, 83, 0.1);
+        }
+        .geometric-shape:nth-child(3) { 
+            bottom: 10%; 
+            left: 50%; 
+            width: 250px;
+            height: 250px;
+            animation-delay: 4s;
+            background: rgba(108, 92, 231, 0.1);
+        }
+        .geometric-shape:nth-child(4) { 
+            top: 30%; 
+            left: 70%; 
+            width: 180px;
+            height: 180px;
+            animation-delay: 6s;
+            background: rgba(214, 48, 49, 0.1);
+        }
+        .geometric-shape:nth-child(5) { 
+            bottom: 40%; 
+            left: 20%; 
+            width: 120px;
+            height: 120px;
+            animation-delay: 8s;
+            background: rgba(253, 203, 110, 0.1);
+        }
+        
+        @keyframes float {
+            0% { transform: rotate(45deg) translate(0, 0); }
+            50% { transform: rotate(60deg) translate(15px, 15px); }
+            100% { transform: rotate(45deg) translate(0, 0); }
+        }
+        
+        /* Floating shapes */
+        .floating-shape {
+            position: absolute;
+            opacity: 0.1;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4A90E2, #6C5CE7);
+            animation: float-around 20s infinite linear;
+        }
+        
+        .floating-shape:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-shape:nth-child(2) { width: 60px; height: 60px; top: 20%; right: 20%; animation-delay: 2s; }
+        .floating-shape:nth-child(3) { width: 100px; height: 100px; bottom: 15%; left: 30%; animation-delay: 4s; }
+        .floating-shape:nth-child(4) { width: 40px; height: 40px; bottom: 30%; right: 10%; animation-delay: 6s; }
+        .floating-shape:nth-child(5) { width: 70px; height: 70px; top: 40%; left: 40%; animation-delay: 8s; }
+        .floating-shape:nth-child(6) { width: 50px; height: 50px; top: 60%; right: 30%; animation-delay: 10s; }
+        .floating-shape:nth-child(7) { width: 90px; height: 90px; bottom: 40%; left: 10%; animation-delay: 12s; }
+        .floating-shape:nth-child(8) { width: 65px; height: 65px; bottom: 10%; right: 40%; animation-delay: 14s; }
+        .floating-shape:nth-child(9) { width: 75px; height: 75px; top: 70%; left: 70%; animation-delay: 16s; }
+        .floating-shape:nth-child(10) { width: 55px; height: 55px; top: 30%; left: 80%; animation-delay: 18s; }
+        
+        @keyframes float-around {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(50px, 25px) rotate(90deg); }
+            50% { transform: translate(0, 50px) rotate(180deg); }
+            75% { transform: translate(-50px, 25px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+        
+        /* Gradient overlays */
+        .gradient-overlay {
+            transition: all 3s ease-in-out;
+            animation: pulse-gradient 8s infinite;
+        }
+        .gradient-0 {
+            background: linear-gradient(45deg, #6C5CE7, #4A90E2);
+        }
+        .gradient-1 {
+            background: linear-gradient(45deg, #00C853, #6C5CE7);
+        }
+        .gradient-2 {
+            background: linear-gradient(45deg, #4A90E2, #D63031);
+        }
+        
+        @keyframes pulse-gradient {
+            0% { opacity: 0.05; }
+            50% { opacity: 0.15; }
+            100% { opacity: 0.05; }
+        }
+        
+        /* Particles */
+        .particles-container {
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #6C5CE7;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: particle-float 15s infinite linear;
+        }
+        
+        .particle:nth-child(2n) {
+            background: #4A90E2;
+            width: 7px;
+            height: 7px;
+        }
+        
+        .particle:nth-child(3n) {
+            background: #00C853;
+            width: 3px;
+            height: 3px;
+        }
+        
+        .particle:nth-child(4n) {
+            background: #D63031;
+            width: 4px;
+            height: 4px;
+        }
+        
+        .particle:nth-child(5n) {
+            background: #F5F7FA;
+            width: 6px;
+            height: 6px;
+        }
+        
+        .particle:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 20%; left: 80%; animation-delay: 1s; }
+        .particle:nth-child(3) { top: 30%; left: 40%; animation-delay: 2s; }
+        .particle:nth-child(4) { top: 40%; left: 60%; animation-delay: 3s; }
+        .particle:nth-child(5) { top: 50%; left: 30%; animation-delay: 4s; }
+        .particle:nth-child(6) { top: 60%; left: 70%; animation-delay: 5s; }
+        .particle:nth-child(7) { top: 70%; left: 10%; animation-delay: 6s; }
+        .particle:nth-child(8) { top: 80%; left: 50%; animation-delay: 7s; }
+        .particle:nth-child(9) { top: 90%; left: 90%; animation-delay: 8s; }
+        .particle:nth-child(10) { top: 15%; left: 45%; animation-delay: 9s; }
+        .particle:nth-child(11) { top: 25%; left: 75%; animation-delay: 10s; }
+        .particle:nth-child(12) { top: 35%; left: 15%; animation-delay: 11s; }
+        .particle:nth-child(13) { top: 45%; left: 55%; animation-delay: 12s; }
+        .particle:nth-child(14) { top: 55%; left: 85%; animation-delay: 13s; }
+        .particle:nth-child(15) { top: 65%; left: 25%; animation-delay: 14s; }
+        .particle:nth-child(16) { top: 75%; left: 65%; animation-delay: 15s; }
+        .particle:nth-child(17) { top: 85%; left: 35%; animation-delay: 16s; }
+        .particle:nth-child(18) { top: 95%; left: 95%; animation-delay: 17s; }
+        .particle:nth-child(19) { top: 5%; left: 55%; animation-delay: 18s; }
+        .particle:nth-child(20) { top: 50%; left: 5%; animation-delay: 19s; }
+        
+        @keyframes particle-float {
+            0% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(50px) translateX(25px); }
+            50% { transform: translateY(100px) translateX(0); }
+            75% { transform: translateY(50px) translateX(-25px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+        
+        /* Fade transition */
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.5s;
+        }
+        .fade-enter, .fade-leave-to {
+            opacity: 0;
+        }
+        
+        /* App-wide styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #2D3436;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Loading animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Animations */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-bounce {
+            animation: bounce 3s infinite;
+        }
+        
+        .animate-pulse {
+            animation: pulse 3s infinite;
+        }
+        
+        .animate-fade-in-up {
+            animation: fade-in-up 1s;
+        }
+    </style>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    currentPage: 1,
+                    pageTransition: '',
+                    uploadedImage: null,
+                    isLoading: false,
+                    loadingProgress: 0,
+                    loadingTimer: null,
+                    showAIResults: false,
+                    currentDesignIndex: 0,
+                    showShareOverlay: false,
+                    hasResources: false,
+                    resources: [],
+                    
+                    // Chrome dino game data
+                    gameActive: false,
+                    gameScore: 0,
+                    dinoJumping: false,
+                    cacti: [],
+                    gameSpeed: 5,
+                    gameInterval: null,
+                    
+                    // Design preferences
+                    designPreferences: {
+                        style: 'modern',
+                        colors: 'neutral',
+                        roomType: 'living'
+                    },
+                    
+                    services: [
+                        {
+                            icon: '🔮',
+                            title: 'Get AI-curated wall designs',
+                            description: 'Let our AI analyze your space and suggest personalized decor options that match your style and preferences.',
+                            buttonText: 'Start Designing',
+                            buttonClass: 'bg-[#6C5CE7] hover:bg-[#5849C8]'
+                        },
+                        {
+                            icon: '📱',
+                            title: 'AR live previews',
+                            description: 'Use your mobile device to see how decorations will look in your real space before making any changes.',
+                            buttonText: 'Open Camera',
+                            buttonClass: 'bg-[#00C853] hover:bg-[#00A844]'
+                        },
+                        {
+                            icon: '🛒',
+                            title: 'Shop decor items (Temporarily disabled)',
+                            description: 'Browse our curated collection of wall decor items from various brands and styles at competitive prices.',
+                            buttonText: 'Coming Soon',
+                            buttonClass: 'bg-[#4A90E2] hover:bg-[#357ABD]'
+                        }
+                    ],
+                    
+                    decorItems: [
+                        { id: 1, emoji: '🖼️', type: 'painting' },
+                        { id: 2, emoji: '🪴', type: 'plant' },
+                        { id: 3, emoji: '📚', type: 'shelf' },
+                        { id: 4, emoji: '💡', type: 'lamp' },
+                        { id: 5, emoji: '🪞', type: 'mirror' },
+                        { id: 6, emoji: '🪑', type: 'chair' }
+                    ],
+                    
+                    placedItems: [],
+                    draggingItem: null,
+                    dragOffset: { x: 0, y: 0 },
+                    
+                    aiDesigns: [
+                        {
+                            name: 'Bohemian Bliss',
+                            description: 'A warm, eclectic style with natural elements and vibrant colors.',
+                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1000&auto=format&fit=crop',
+                            products: [
+                                { name: 'Macramé Wall Hanging', price: 49.99, link: '#' },
+                                { name: 'Rattan Mirror', price: 89.99, link: '#' },
+                                { name: 'Moroccan Floor Pouf', price: 129.99, link: '#' }
+                            ]
+                        },
+                        {
+                            name: 'Modern Minimalist',
+                            description: 'Clean lines, neutral colors, and uncluttered space for a calming atmosphere.',
+                            image: 'https://images.unsplash.com/photo-1615529162924-f8605388461d?q=80&w=1000&auto=format&fit=crop',
+                            products: [
+                                { name: 'Geometric Wall Shelf', price: 79.99, link: '#' },
+                                { name: 'Scandinavian Art Print', price: 39.99, link: '#' },
+                                { name: 'LED Corner Lamp', price: 149.99, link: '#' }
+                            ]
+                        },
+                        {
+                            name: 'Industrial Chic',
+                            description: 'Raw materials like metal and wood with a vintage factory aesthetic.',
+                            image: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1000&auto=format&fit=crop',
+                            products: [
+                                { name: 'Pipe Shelf Unit', price: 159.99, link: '#' },
+                                { name: 'Vintage Factory Clock', price: 69.99, link: '#' },
+                                { name: 'Edison Bulb Sconce', price: 89.99, link: '#' }
+                            ]
+                        }
+                    ]
+                }
+            },
+            methods: {
+                // Page navigation with transitions
+                fadeToPage(pageNumber) {
+                    this.pageTransition = 'opacity-0';
+                    setTimeout(() => {
+                        this.currentPage = pageNumber;
+                        setTimeout(() => {
+                            this.pageTransition = 'opacity-100';
+                        }, 100);
+                    }, 500);
+                },
+                
+                // Service selection
+                selectService(index) {
+                    if (index === 0) {
+                        this.fadeToPage(3);
+                    } else if (index === 1) {
+                        alert('This feature is available in the mobile app only!');
+                    } else {
+                        alert('This feature is temporarily disabled and will be available soon!');
+                    }
+                },
+                
+                // File upload handling
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        if (file.size > 10 * 1024 * 1024) {
+                            alert('File is too large. Maximum size is 10MB.');
+                            return;
+                        }
+                        
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.uploadedImage = e.target.result;
+                            this.placedItems = [];
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+                
+                handleDrop(event) {
+                    event.preventDefault();
+                    const file = event.dataTransfer.files[0];
+                    if (file) {
+                        if (file.size > 10 * 1024 * 1024) {
+                            alert('File is too large. Maximum size is 10MB.');
+                            return;
+                        }
+                        
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.uploadedImage = e.target.result;
+                            this.placedItems = [];
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+                
+                // Resource uploads
+                uploadResources(event) {
+                    const files = event.target.files;
+                    if (files.length > 0) {
+                        // Here we would normally upload these to the server
+                        for (let i = 0; i < files.length; i++) {
+                            this.resources.push({
+                                name: files[i].name,
+                                size: files[i].size,
+                                type: files[i].type
+                            });
+                        }
+                    }
+                },
+                
+                // Reset functions
+                resetWall() {
+                    this.uploadedImage = null;
+                    this.placedItems = [];
+                    this.resources = [];
+                    this.hasResources = false;
+                    this.showAIResults = false;
+                    this.designPreferences = {
+                        style: 'modern',
+                        colors: 'neutral',
+                        roomType: 'living'
+                    };
+                },
+                
+                resetAndGoBack() {
+                    this.resetWall();
+                    this.fadeToPage(3);
+                },
+                
+                // Decoration items handling
+                addItemToWall(item) {
+                    // Create a copy to avoid modifying the original
+                    const placedItem = {
+                        id: Date.now(), // Unique ID
+                        emoji: item.emoji,
+                        type: item.type,
+                        top: 50 + Math.random() * 100,
+                        left: 50 + Math.random() * 100
+                    };
+                    
+                    this.placedItems.push(placedItem);
+                },
+                
+                // Dragging functionality
+                dragItem(event, item) {
+                    this.draggingItem = item;
+                    
+                    // Calculate initial offset from cursor to item position
+                    const rect = event.target.getBoundingClientRect();
+                    this.dragOffset = {
+                        x: event.clientX - rect.left,
+                        y: event.clientY - rect.top
+                    };
+                    
+                    // Add event listeners for drag operations
+                    document.addEventListener('mousemove', this.onMouseMove);
+                    document.addEventListener('mouseup', this.onMouseUp);
+                },
+                
+                onMouseMove(event) {
+                    if (!this.draggingItem) return;
+                    
+                    // Update position based on mouse movement
+                    // Get the container position for relative positioning
+                    const container = this.uploadedImage 
+                        ? event.target.closest('.relative') 
+                        : document.getElementById('game-area');
+                        
+                    if (container) {
+                        const rect = container.getBoundingClientRect();
+                        
+                        // Calculate new position relative to container
+                        const newLeft = event.clientX - rect.left - this.dragOffset.x;
+                        const newTop = event.clientY - rect.top - this.dragOffset.y;
+                        
+                        // Update the item position
+                        this.placedItems = this.placedItems.map(item => {
+                            if (item.id === this.draggingItem.id) {
+                                return { ...item, left: newLeft, top: newTop };
+                            }
+                            return item;
+                        });
+                    }
+                },
+                
+                onMouseUp() {
+                    this.draggingItem = null;
+                    document.removeEventListener('mousemove', this.onMouseMove);
+                    document.removeEventListener('mouseup', this.onMouseUp);
+                },
+                
+                // AI processing
+                startAIProcessing() {
+                    this.isLoading = true;
+                    this.loadingProgress = 0;
+                    this.startGame();
+                    
+                    // Simulate AI processing with a progress timer
+                    this.loadingTimer = setInterval(() => {
+                        this.loadingProgress += 1;
+                        if (this.loadingProgress >= 100) {
+                            clearInterval(this.loadingTimer);
+                            this.stopGame();
+                            this.finishAIProcessing();
+                        }
+                    }, 600); // 60 seconds total (100 * 600ms = 60000ms)
+                },
+                
+                finishAIProcessing() {
+                    this.isLoading = false;
+                    this.showAIResults = true;
+                    this.currentDesignIndex = 0;
+                    
+                    // In a real world app, we would use the custom AI to:
+                    // 1. Analyze the wall image
+                    // 2. Consider design preferences (style, color scheme, room type)
+                    // 3. Use any uploaded resources
+                    // 4. Generate designs using ML models trained on Pinterest, interior design sites, etc.
+                    // 5. Apply designs to the user's wall without changing the wall itself
+                    
+                    // For now, we're simulating this with pre-defined designs
+                },
+                
+                // Chrome dinosaur game functionality
+                startGame() {
+                    this.gameActive = true;
+                    this.gameScore = 0;
+                    this.dinoJumping = false;
+                    this.cacti = [{ position: 600 }]; // Start with one cactus
+                    
+                    // Add keyboard event listener
+                    document.addEventListener('keydown', this.handleKeyDown);
+                    document.getElementById('game-container').addEventListener('click', this.jump);
+                    
+                    // Game loop
+                    this.gameInterval = setInterval(() => {
+                        this.updateGame();
+                    }, 50);
+                },
+                
+                stopGame() {
+                    this.gameActive = false;
+                    clearInterval(this.gameInterval);
+                    document.removeEventListener('keydown', this.handleKeyDown);
+                    if (document.getElementById('game-container')) {
+                        document.getElementById('game-container').removeEventListener('click', this.jump);
+                    }
+                },
+                
+                handleKeyDown(event) {
+                    if (event.code === 'Space' && !this.dinoJumping) {
+                        this.jump();
+                    }
+                },
+                
+                jump() {
+                    if (!this.dinoJumping) {
+                        this.dinoJumping = true;
+                        const dino = document.getElementById('dino');
+                        if (dino) {
+                            // Jump animation
+                            let jumpHeight = 0;
+                            const jumpUp = setInterval(() => {
+                                jumpHeight += 5;
+                                dino.style.bottom = jumpHeight + 'px';
+                                if (jumpHeight >= 80) {
+                                    clearInterval(jumpUp);
+                                    
+                                    // Fall animation
+                                    const fallDown = setInterval(() => {
+                                        jumpHeight -= 5;
+                                        dino.style.bottom = jumpHeight + 'px';
+                                        if (jumpHeight <= 0) {
+                                            dino.style.bottom = '0px';
+                                            this.dinoJumping = false;
+                                            clearInterval(fallDown);
+                                        }
+                                    }, 30);
+                                }
+                            }, 30);
+                        }
+                    }
+                },
+                
+                updateGame() {
+                    if (!this.gameActive) return;
+                    
+                    // Move cacti
+                    this.cacti = this.cacti.map(cactus => {
+                        return { position: cactus.position - this.gameSpeed };
+                    }).filter(cactus => cactus.position > -20); // Remove off-screen cacti
+                    
+                    // Add new cacti occasionally
+                    if (Math.random() < 0.02 && this.cacti.length < 3) {
+                        this.cacti.push({ position: 600 });
+                    }
+                    
+                    // Check for collisions
+                    const dino = document.getElementById('dino');
+                    if (dino) {
+                        const dinoRect = dino.getBoundingClientRect();
+                        
+                        for (const cactus of this.cacti) {
+                            const cactusElem = document.querySelector(`[style*="left: ${cactus.position}px"]`);
+                            if (cactusElem) {
+                                const cactusRect = cactusElem.getBoundingClientRect();
+                                
+                                if (
+                                    dinoRect.right > cactusRect.left &&
+                                    dinoRect.left < cactusRect.right &&
+                                    dinoRect.bottom > cactusRect.top &&
+                                    dinoRect.top < cactusRect.bottom
+                                ) {
+                                    // Collision detected
+                                    this.gameScore = 0;
+                                    this.cacti = [{ position: 600 }];
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Increment score
+                    this.gameScore++;
+                },
+                
+                // Design carousel navigation
+                prevDesign() {
+                    if (this.currentDesignIndex > 0) {
+                        this.currentDesignIndex--;
+                    } else {
+                        this.currentDesignIndex = this.aiDesigns.length - 1;
+                    }
+                },
+                
+                nextDesign() {
+                    if (this.currentDesignIndex < this.aiDesigns.length - 1) {
+                        this.currentDesignIndex++;
+                    } else {
+                        this.currentDesignIndex = 0;
+                    }
+                },
+                
+                // Design actions
+                applyDesign(design) {
+                    this.fadeToPage(4);
+                },
+                
+                shopItems(design) {
+                    // In a real app, this would navigate to the e-commerce section
+                    this.fadeToPage(4);
+                },
+                
+                shareDesign() {
+                    this.showShareOverlay = true;
+                },
+                
+                shareGalleryItem() {
+                    this.showShareOverlay = true;
+                },
+                
+                // Navigation helpers
+                goToCommunityGallery() {
+                    this.fadeToPage(5);
+                },
+                
+                // Utility functions
+                getCurrentDesignProducts() {
+                    return this.aiDesigns[this.currentDesignIndex]?.products || [];
+                }
+            },
+            mounted() {
+                // Add event listeners for document-wide mouse events
+                document.addEventListener('mouseup', this.onMouseUp);
+                
+                // For mobile devices - touch events
+                document.addEventListener('touchend', e => {
+                    if (this.isLoading && this.gameActive) {
+                        this.jump();
+                    }
+                });
+            },
+            beforeUnmount() {
+                // Clean up event listeners
+                document.removeEventListener('mouseup', this.onMouseUp);
+                document.removeEventListener('keydown', this.handleKeyDown);
+                
+                if (this.loadingTimer) {
+                    clearInterval(this.loadingTimer);
+                }
+                
+                if (this.gameInterval) {
+                    clearInterval(this.gameInterval);
+                }
+            }
+        }).mount('#app')
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
